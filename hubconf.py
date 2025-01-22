@@ -1,3 +1,14 @@
+"""
+Allows to load pre-trained models from the `ibot` repository.
+
+Example:
+```python
+import torch
+import torch.hub
+
+model = torch.hub.load("bytedance/ibot", "vits_16")
+"""
+
 import torch
 import torch.hub
 import torch.nn as nn
@@ -8,20 +19,22 @@ import models.vision_transformer as vt
 URL = "https://lf3-nlp-opensource.bytetos.com/obj/nlp-opensource/archive/2022/ibot/"
 
 PTHS = dict(
-    vit_s16="vits_16/checkpoint.pth",
-    swint_7="swint_7/checkpoint.pth",
-    swint_14="swint_14/checkpoint.pth",
-    vitb_16="vitb_16/checkpoint.pth",
-    vitb_16_rand_mask="vitb_16_rand_mask/checkpoint.pth",
-    vitl_16="vitl_16/checkpoint.pth",
-    vitl_16_rand_mask="vitl_16_rand_mask/checkpoint.pth",
+    vit_s16="vits_16/checkpoint_teacher.pth",
+    swint_7="swint_7/checkpoint_teacher.pth",
+    swint_14="swint_14/checkpoint_teacher.pth",
+    vitb_16="vitb_16/checkpoint_teacher.pth",
+    vitb_16_rand_mask="vitb_16_rand_mask/checkpoint_teacher.pth",
+    vitl_16="vitl_16/checkpoint_teacher.pth",
+    vitl_16_rand_mask="vitl_16_rand_mask/checkpoint_teacher.pth",
 )
 
 
 def _load_ckpt(pth, model: nn.Module, pretrained=True, **kwargs):
     if pretrained:
-        pth = torch.hub.load_state_dict_from_url(url=URL + pth)
-        state_dict = pth["teacher"]
+        pth = torch.hub.load_state_dict_from_url(
+            url=URL + pth, file_name="ibot_" + pth.split("/")[0]
+        )
+        state_dict = pth["state_dict"]
         model.load_state_dict(state_dict, strict=False)
     return model
 
